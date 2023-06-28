@@ -1,10 +1,10 @@
-#include "PauseMenuPopupState.h"
+﻿#include "PauseMenuPopupState.h"
 #include <iostream>
 #include "Game.h"
 #include "MainMenuState.h"
 using namespace std;
 
-// Begin PauseState
+
 void PauseMenuPopupState::Enter()
 {
 	cout << "Entering Pause..." << endl;
@@ -15,20 +15,20 @@ void PauseMenuPopupState::Enter()
 
 void PauseMenuPopupState::Update()
 {
-	// Update buttons. Allows for mouseovers.
+	// Update button
 	for (int i = 0; i < (int)m_vButtons.size(); i++)
 		m_vButtons[i]->Update();
 
-	//close the pause menu popup
+	//close 
 	if (m_vButtons[btn::resume]->Clicked())
 	{
 		Game::Instance()->GetFSM()->PopState();
 	}
-	//else if exit was clicked, we need to go back to main menu
+
 	else if (m_vButtons[btn::exit]->Clicked())
 	{
-		Game::Instance()->GetFSM()->Clean(); // Clear all states, including GameState on bottom.
-		//go back to main menu
+		Game::Instance()->GetFSM()->Clean(); // xóa hết 
+		// trở về mainmenu 
 		Game::Instance()->GetFSM()->ChangeState(new MainMenuState());
 	}
 
@@ -40,11 +40,11 @@ void PauseMenuPopupState::Render()
 
 	SDL_SetRenderDrawColor(Game::Instance()->GetRenderer(), 64, 64, 128, 128);
 
-	//draw background 
+	// vẽ background
 	SDL_Rect rect = { 256, 128, 512, 512 };
 	SDL_RenderFillRect(Game::Instance()->GetRenderer(), &rect);
 
-	//draw the buttons
+	
 	for (int i = 0; i < (int)m_vButtons.size(); i++)
 		m_vButtons[i]->Render();
 

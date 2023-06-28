@@ -1,9 +1,8 @@
 #include "Player.h"
 #include "Game.h"
-#include <algorithm> //for min/max functions
+#include <algorithm> 
 
-Player::Player(SDL_Texture* tex, double x, double y, int hlth, int liv, int sc)
-	: SpriteExAnimated(tex, x - 25, y - 25, 0, 1, 4, 0.1f)
+Player::Player(SDL_Texture* tex, double x, double y, int hlth, int liv, int sc): SpriteExAnimated(tex, x - 25, y - 25, 0, 1, 4, 0.1f)
 {
 	isInvincible = false;
 	rof = 500;

@@ -14,10 +14,10 @@ void ScreenState::RenderFont(bool isRefreshText, const char *text, int x, int y)
 
 	if (isRefreshText)
 	{
-		SDL_Color textColor = { 255,255,255,0 };//white color
+		SDL_Color textColor = { 255,255,255,0 };
 		SDL_Surface * fontSurface = TTF_RenderText_Solid(gFont, text, textColor);
 
-		SDL_DestroyTexture(m_pFontTexture); //need to de-allocate previous font texture
+		SDL_DestroyTexture(m_pFontTexture); 
 		m_pFontTexture = SDL_CreateTextureFromSurface(Game::Instance()->GetRenderer(), fontSurface);
 		m_rFontRect = { x,y,fontSurface->w,fontSurface->h };
 

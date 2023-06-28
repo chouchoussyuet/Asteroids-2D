@@ -6,7 +6,7 @@ void SpriteEx::Render()
 	if (SDL_RenderCopyEx(Game::Instance()->GetRenderer(), texture,
 		&spriteSrcRect, &spriteDestRect, angle, nullptr, SDL_FLIP_NONE) == 0)
 	{
-		//	std::cout << "Success...\n";
+	 // cout << "Success..";
 	}
 	else
 	{

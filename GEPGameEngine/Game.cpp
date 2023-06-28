@@ -10,8 +10,8 @@ Game* Game::Instance()
 	return instance;
 }
 
-bool Game::Init(const char* title, const int xPos, const int yPos, const int width, const int height,
-	const int flags)
+// hàm kh?i t?o 
+bool Game::Init(const char* title, const int xPos, const int yPos, const int width, const int height, const int flags)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
 	{
@@ -49,7 +49,7 @@ bool Game::Init(const char* title, const int xPos, const int yPos, const int wid
 	
 	}
 
-	if (TTF_Init() == 0) //font init is succesful
+	if (TTF_Init() == 0) 
 	{
 		cout << "Font init success!\n";
 	}
@@ -70,7 +70,7 @@ bool Game::Init(const char* title, const int xPos, const int yPos, const int wid
 }
 
 
-
+// load ?nh 
 SDL_Texture* Game::LoadTexture(const char* path)
 {
 	SDL_Surface *surface = IMG_Load(path);
@@ -78,12 +78,13 @@ SDL_Texture* Game::LoadTexture(const char* path)
 
 }
 
- 
+
 bool Game::IsRunning()
 {
-	return isAppRunning;
+	return isAppRunning; // return n?u ?ang ch?y 
 }
 
+// ktra tr?ng thái phím 
 bool Game::KeyDown(SDL_Scancode c)
 {
 	if (m_iKeystates == nullptr)
@@ -105,14 +106,14 @@ bool Game::KeyUp(SDL_Scancode c)
 }
 
 
-
+// C?p nh?t tr?ng thái State machine 
 void Game::Update()
 {
 
 	GetFSM()->Update();
 }
 
-
+//X? lý s? ki?n trong hàng ??i
 void Game::HandleEvents()
 {
 	SDL_Event event;
@@ -144,12 +145,13 @@ void Game::HandleEvents()
 	}
 }
 
-
+// V? k?t xu?t 
 void Game::Render()
 {
 	GetFSM()->Render();
 }
 
+// gi?i phóng d?n d?p 
 void Game::Clean()
 {
 	cout << "Cleaning up and shutting down engine...\n";

@@ -24,9 +24,9 @@ void StateMachine::ChangeState(ScreenState* pState)
 	if (!m_vStates.empty())
 	{
 		m_vStates.back()->Exit();
-		delete m_vStates.back(); // De-allocating the state in the heap.
-		m_vStates.back() = nullptr; // Nullifying pointer to the de-allocated state.
-		m_vStates.pop_back(); // Removes the now-null pointer from the vector.
+		delete m_vStates.back(); 
+		m_vStates.back() = nullptr; 
+		m_vStates.pop_back(); 
 	}
 	pState->Enter();
 	m_vStates.push_back(pState);
@@ -46,7 +46,7 @@ void StateMachine::PopState()
 
 void StateMachine::Clean()
 {
-	while (!m_vStates.empty()) // Ensures that ALL states left in the vector are cleaned up.
+	while (!m_vStates.empty()) 
 	{
 		m_vStates.back()->Exit();
 		delete m_vStates.back();

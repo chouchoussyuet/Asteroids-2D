@@ -19,14 +19,14 @@ Sprite::Sprite(const char* spritePath, SDL_Rect srcRect, SDL_Rect spritePosition
 	spriteSrcRect.y = spriteSrcRect.h*initialRow;  
 }
 
+
 Sprite::~Sprite()
 {
 //	SDL_FreeSurface(sprite); 
-//	SDL_DestroyTexture(texture); //destroy the texture
+
 }
 
-//Renders the sprite.
-//Must be called in the main game render loop
+
 void Sprite::Render()
 {
 

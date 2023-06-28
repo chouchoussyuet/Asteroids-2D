@@ -23,3 +23,4 @@ void Timer::Tick() {
 
 	SDL_Delay(FRAME_DELAY);
 }
+

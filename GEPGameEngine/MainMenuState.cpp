@@ -14,13 +14,13 @@ void MainMenuState::Enter()
 void MainMenuState::Update()
 {
 
-	// Update buttons. Allows for mouseovers.
+	// Update buttons
 	for (int i = 0; i < (int)m_vButtons.size(); i++)
 		m_vButtons[i]->Update();
 
 	if (m_vButtons[btn::play]->Clicked())
 	{
-		//we need to switch to gamestate ... 
+		
 		Game::Instance()->GetFSM()->ChangeState(new GameState());
 	}
 
@@ -36,7 +36,7 @@ void MainMenuState::Update()
 void MainMenuState::Render()
 {
 
-	SDL_SetRenderDrawColor(Game::Instance()->GetRenderer(), 255, 128, 0, 255);
+	SDL_SetRenderDrawColor(Game::Instance()->GetRenderer(), 234, 209, 220, 1);
 	SDL_RenderClear(Game::Instance()->GetRenderer());
 	for (int i = 0; i < (int)m_vButtons.size(); i++)
 		m_vButtons[i]->Render();

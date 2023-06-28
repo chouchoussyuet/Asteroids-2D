@@ -1,4 +1,4 @@
-#include "GameState.h"
+﻿#include "GameState.h"
 #include "Game.h"
 #include "PauseMenuPopupState.h"
 #include "Asteroid.h"
@@ -8,6 +8,7 @@
 #include <iostream>
 #include "FinalState.h"
 
+// thời gian chờ giữa lần bắn đạn 
 Uint32 gunCooldownTimer(Uint32 interval, void* player) {
 	Player* temp = (Player*)player;
 	temp->setGunCD(false);
@@ -15,6 +16,7 @@ Uint32 gunCooldownTimer(Uint32 interval, void* player) {
 	return 0;
 }
 
+// chuyển trò chơi sang trạng thái kết thúc 
 Uint32 gameOverTimeout(Uint32 interval, void* p) {
 	FinalState* final = new FinalState();
 	Game* temp = (Game*)p;
@@ -25,6 +27,7 @@ Uint32 gameOverTimeout(Uint32 interval, void* p) {
 	return 0;
 }
 
+// tạo vật phẩm đặc biệt 
 Uint32 PowerUpSpawnTimer(Uint32 interval, void* st) { 
 	GameState* gs = (GameState*)st;
 	gs->SpawnPowerUp();
@@ -32,7 +35,7 @@ Uint32 PowerUpSpawnTimer(Uint32 interval, void* st) {
 	return interval;
 }
 
-
+// tạo ra một thiên thạch 
 Uint32 AsteroidSpawnTimer(Uint32 interval, void* st) { 
 	GameState* gs = (GameState*)st;
 	gs->SpawnAsteroid();
@@ -40,6 +43,7 @@ Uint32 AsteroidSpawnTimer(Uint32 interval, void* st) {
 	return interval;
 }
 
+// khi player dùng vật phẩm đặc biệt 
 Uint32 DoublePointsTimer(Uint32 interval, void* p) {
 	Player* temp = (Player*)p;
 	temp->setScoreMulti(1);
@@ -49,6 +53,7 @@ Uint32 DoublePointsTimer(Uint32 interval, void* p) {
 	return 0;
 }
 
+// khi player mất mạng và cần hồi sinh 
 Uint32 RespawnTimeout(Uint32 interval, void* state) {
 	GameState* gs = (GameState*)state;
 
@@ -58,6 +63,7 @@ Uint32 RespawnTimeout(Uint32 interval, void* state) {
 	return 0;
 }
 
+// đặt lại trạng thái vô hình cho hành tinh bị phá hủy 
 Uint32 AsteroidVoidTimer(Uint32 interval, void* ast) {
 
 	Asteroid* temp = (Asteroid*)ast;
@@ -66,6 +72,7 @@ Uint32 AsteroidVoidTimer(Uint32 interval, void* ast) {
 	return 0;
 }
 
+// Đặt lại trạng thái bất tử 
 Uint32 InvincibilityTimer(Uint32 interval, void* player) {
 
 	Player* temp = (Player*)player;
@@ -74,6 +81,7 @@ Uint32 InvincibilityTimer(Uint32 interval, void* player) {
 	return 0;
 }
 
+// trò chơi bắt đầu 
 void GameState::Enter()
 {
 	cout << "Entering Game...\n";
@@ -101,18 +109,23 @@ void GameState::Enter()
 
 	Mix_PlayChannel(-1, bgMusic, 0);
 
+	// background 
 	bgSpriteTex = Game::Instance()->LoadTexture("sprites/background.png");
+	// nhân vật 
 	mainSpriteTex = Game::Instance()->LoadTexture("sprites/Sprites.png");
 
+	// vector chứa các thiên thạch 
 	astTex.push_back(Game::Instance()->LoadTexture("sprites/a1.png"));
 	astTex.push_back(Game::Instance()->LoadTexture("sprites/a2.png"));
 	astTex.push_back(Game::Instance()->LoadTexture("sprites/a3.png"));
 	cout << "0 - " << astTex.size() << "\n";
 
+	// vật phẩm, thanh máu, mạng  
 	pwrTex = Game::Instance()->LoadTexture("sprites/powerups.png");
 	lifePtsSpriteTex = Game::Instance()->LoadTexture("sprites/heartsprite.png");
 	hbarSpriteTex = Game::Instance()->LoadTexture("sprites/health_sprite.png");
 
+	// Font chữ 
 	gFont = TTF_OpenFont("Font/game_over.ttf", 56);
 
 	bgSrcRect.x = bgSrcRect.y = 0;
@@ -131,10 +144,12 @@ void GameState::Enter()
 	TimerID asteroidTimerID = Timer::Instance()->StartTimer(1000, AsteroidSpawnTimer, (void*)this);
 }
 
+// truy nhập player 
 Player* GameState::getPlayer() {
 	return player;
 }
 
+// vẽ thanh máu lên màn 
 void GameState::RenderHealthBar(bool refresh, int x, int y, int health) {
 	SDL_Rect srcRect;
 	SDL_Rect destRect;
@@ -153,6 +168,7 @@ void GameState::RenderHealthBar(bool refresh, int x, int y, int health) {
 	SDL_RenderCopy(Game::Instance()->GetRenderer(), hbarSpriteTex, &srcRect, &destRect);
 }
 
+// thanh mạng sống 
 void GameState::RenderLifePoints(bool refresh, int x, int y, int lives) {
 	SDL_Rect srcRct;
 	SDL_Rect destRct;
@@ -172,6 +188,7 @@ void GameState::RenderLifePoints(bool refresh, int x, int y, int lives) {
 	}
 }
 
+// số mạng còn lại 
 bool GameState::checkEndGame() {
 	if (player->getLives() - 1 == 0) {
 		Mix_PlayChannel(-1, gameOverSound, 0);
@@ -181,31 +198,37 @@ bool GameState::checkEndGame() {
 	return false;
 }
 
+// update trạng thái 
 void GameState::Update()
 {
+	// nhấn esc tạm dừng 
 	if (Game::Instance()->KeyDown(SDL_SCANCODE_ESCAPE) == 1) {
 		Game::Instance()->GetFSM()->PushState(new PauseMenuPopupState());
 			return;
 	}
 
+	// trạng thái thiên thạch và vật phẩm 
 	if ((int)asteroids.size() > 0) {
 		for (int i = 0; i < (int)asteroids.size(); i++) {
 			asteroids[i]->Update();
 		}
 	}
 
+	// ktra va chạm 
 	if ((int)powerUps.size() > 0) {
 		for (int i = 0; i < (int)powerUps.size(); i++) {
 			powerUps[i]->Update();
 		}
 	}
 
+	// ktra người chơi 
 	if (player) {
 		this->CheckCollision();
 		if (player) {
 			player->Update();
 		}
 
+		// nhấn nút space bắn đạn 
 		if (Game::Instance()->KeyDown(SDL_SCANCODE_SPACE) && player)
 		{
 			if (player->getScoreMulti() == 1) {
@@ -224,6 +247,8 @@ void GameState::Update()
 			}
 		}
 
+
+		// di chuyển di lên 
 		if (Game::Instance()->KeyDown(SDL_SCANCODE_W))
 		{
 			if (!Mix_Playing(15))
@@ -242,6 +267,7 @@ void GameState::Update()
 	}
 }
 
+// giao diện các đối tượng 
 void GameState::Render()
 {
 	SDL_SetRenderDrawColor(Game::Instance()->GetRenderer(), 255, 255, 255, 255);
@@ -255,16 +281,16 @@ void GameState::Render()
 		string pts = "Points: " + to_string(player->getScore());
 
 		RenderHealthBar(true, 15, 680, (player != nullptr ? player->getHealth() : 0));
-		RenderFont(true, pts.c_str(), 18, 660);
+		RenderFont(true, pts.c_str(), 18, 660); // điểm số 
 		RenderLifePoints(true, 15, 720, (player != nullptr ? player->getLives() : 0));
 	}
 
-	if ((int)asteroids.size() > 0) {
+	if ((int)asteroids.size() > 0) { // các hành tinh 
 		for (int i = 0; i < (int)asteroids.size(); i++)
 			asteroids[i]->Render();
 	}
 
-	if ((int)powerUps.size() > 0) {
+	if ((int)powerUps.size() > 0) { // vật phẩm 
 		for (int i = 0; i < (int)powerUps.size(); i++)
 			powerUps[i]->Render();
 	}
@@ -280,20 +306,21 @@ void GameState::Render()
 
 }
 
+// Tạo ra các thiên thạch và kích hoạt timer 
 void GameState::SpawnAsteroid() {
 	if ((int)asteroids.size() < 8) {
 		SDL_Rect asteroidSrcRect;
 		SDL_Rect asteroidDestRect;
 		asteroidSrcRect.x = 0;
 		asteroidSrcRect.y = 0;
-		float r;
-		int rand1;
-		int rand2;
+		float r; // tốc độ quay khối đá ( biến ngẫu nhiên ) 
+		int rand1; // hướng di chuyển khối đá ( ngẫu nhiên ) 
+		int rand2; // hướng di chuyển khối đá ( ngẫu nhiên ) 
 
-		int astSize = 1 + rand() % (3 - 1 + 1);
+		int astSize = 1 + rand() % (3 - 1 + 1); // kích thước khối đá ( ngẫu nhiên - 1 hoặc 2 hoặc 3 )
 
 		switch (astSize) {
-			case 1: {
+			case 1: { // Kích thước thiên thạch là 32x32
 				asteroidSrcRect.w = asteroidSrcRect.h = 32;
 				asteroidDestRect.w = asteroidDestRect.h = 32;
 
@@ -301,6 +328,7 @@ void GameState::SpawnAsteroid() {
 				rand1 = 1 + rand() % (2 - 1 + 1);
 				rand2 = 1 + rand() % (2 - 1 + 1);
 
+				// vị trí ban đầu 
 				asteroidDestRect.x = (rand() % 1000) + 1;
 				asteroidDestRect.y = 700;
 
@@ -359,18 +387,20 @@ void GameState::SpawnAsteroid() {
 		}
 	}
 }
-
+// Hàm hồi sinh player 
 void GameState::playerRespawn(Player* p) {
-	int lives = p->getLives() - 1;
-	int score = p->getScore();
-	delete player;
-	player = nullptr;
-	SDL_Delay(2000);
+	int lives = p->getLives() - 1;// giảm lives đi 1 
+	int score = p->getScore(); // cập nhật điểm score ( điểm số ) 
+	delete player;// xóa đối tượng ng chơi cũ 
+	player = nullptr; // tạo ra ng chơi mới
+	SDL_Delay(2000);// vô hiệu hóa 2s đợi hồi sinh 
 	player = new Player(mainSpriteTex, bgDestRect.w * 0.5, bgDestRect.h * 0.5, 5, lives, score);
-	player->setInvincible(true);
+	player->setInvincible(true);// bất tử trong 3s 
+	// Hủy đánh dấu bất tử 
 	TimerID immuneTimer = Timer::Instance()->StartTimer(3000, InvincibilityTimer, (void*)player);
 }
 
+// Tạo ra các vật phẩm ngẫu nhiên 
 void GameState::SpawnPowerUp() {
 	if ((int)powerUps.size() < 3) {
 		PowerUp* p;
@@ -418,6 +448,7 @@ void GameState::SpawnPowerUp() {
 	}
 }
 
+// dọn dẹp kết thúc 
 void GameState::Exit()
 {
 	cout << "GameState: Cleaning up and shutting down engine...\n";
@@ -429,7 +460,10 @@ void GameState::Exit()
 	vector<PowerUp*> powerUps;
 }
 
+// hàm xử lý va chạm 
 void GameState::CheckCollision() {
+
+	// player - vật phẩm 
 	if ((int)powerUps.size() > 0) {
 		for (int i = 0; i < (int)powerUps.size(); i++) {
 			if (RectCollisionTest(player->getDestRect(), powerUps[i]->getDestRect())) {
@@ -468,6 +502,7 @@ void GameState::CheckCollision() {
 		}
 	}
 
+	// player thiên thạch 
 	if ((int)asteroids.size() > 0) {
 		for (int i = 0; i < (int)asteroids.size(); i++)
 		{
@@ -502,6 +537,7 @@ void GameState::CheckCollision() {
 		}
 	}
 
+	// đạn và thiên thạch 
 	bool isBreakOutOfLoop = false;
 	if ((int)player->GetBullets().size() > 0) {
 		for (int b = 0; b < (int)player->GetBullets().size(); b++)
